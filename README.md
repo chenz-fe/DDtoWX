@@ -5,15 +5,19 @@
 
 实际操作之后发现，并不是太复杂。nodeJS加vscode全局替换，很快就能改完。
 
+之所以没有全部写成程序来执行，一是因为我对两边的api不是太熟，这个项目也是新接手的，业务逻辑完全不熟，写程序耗费时间太久且不好排查错误；二是通过逐个api的报错修改，可以整理两个小程序差异点，同时尽快熟悉业务代码。
+修复原有钉钉小程序的bug，加上转为微信小程序一共花费4个工作日的时间，原来预期是10个工作日，所以这个效率是可以接受的。
+
 ## 1. 修改文件后缀名
 
 钉钉小程序和支付宝小程序几乎没有差别，最主要的是支付宝小程序全局变量 `my`, 钉钉小程序对应为 `dd`。而钉钉小程序的文档不如支付宝小程序详细，所以看文档直接看支付宝小程序的就可以了。
 
 现在开始把钉钉转微信啦！
 
-首先第一步是把文件后缀名改了，axml改为wxml，wxss改为acss
+首先第一步是把文件后缀名改了，axml改为wxml，wxss改为acss；
 
 这一步可以用JS脚本执行。
+[代码地址](https://github.com/dora-zc/DDtoWX)
 
 
 ## 2. 修改文件内部引用文件的后缀名
@@ -28,28 +32,25 @@
 
 ## 4. API修改
 
-左边是钉钉的，右边是对应的微信小程序的方法
+### 钉钉/支付宝小程序与微信小程序的区别
 
-`onTap`  ->  `bindtap`
+钉钉小程序和支付宝小程序基本上没有区别，把 `dd`改为`my`即可。下面我整理了一下钉钉小程序和微信小程序的区别，其实不是太大，遇到问题查一下文档就能解决。
 
-`onBlur` -> `bindblur`
+相比之下，钉钉小程序的编辑器非常难用，很容易预览白屏，需要重启编辑器，这一点真的很难接受。
 
-`dd.getStorageSync({key: 'score'}).data`  ->   `wx.getStorageSync('score')`
-
-`dd.showToast({content: '请填写名称'})`  ->  `wx.showToast({title: '请填写名称',icon:'none'})`，如果不设置`icon:none`，会默认显示成功的图标
-
-`dd.datePicker`  ->  微信里没有此方法
-
-`a:`  -> ` wx:`
-
-http请求头：`headers` ->  `header`
-
-通过e.target获取的值，微信小程序会转成小写字母
-
-例如： `e.target.dataset.recordId` -> `e.target.dataset.recordid`
-
-当子组件需要调用父组件的某个方法时，钉钉小程序父组件可以将函数作为属性传递给子组件，由子组件直接调用；微信小程序目前只能通过父组件事件监听，子组件通过`triggerEvent`触发父组件的方法
-
-`uploadFile` 钉钉和微信小程序参数定义有区别
-
-持续更新中...
+| api描述                        | 钉钉小程序                                                   | 微信小程序                                                   |
+| ------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 点击事件绑定                   | `onTap`                                                      | `bindtap`                                                    |
+| 失去焦点                       | `onBlur`                                                     | `bindblur`                                                   |
+| 本地缓存                       | `dd.getStorageSync({key: 'score'}).data`                     | `wx.getStorageSync('score')`                                 |
+| toast提示                      | `dd.showToast({content: '请填写名称'})`                      | `wx.showToast({title: '请填写名称',icon:'none'})`，如果不设置`icon:none`，会默认显示成功的图标` |
+| 事件选择器                     | `dd.datePicker`                                              | 微信里没有此方法，可以通过picker-view组件实现                |
+| 模板语法                       | `a:`                                                         | ` wx:`                                                       |
+| 网络请求header参数             | `dd.request`中为`headers`                                    | `wx.request`中为`header`                                     |
+| 事件对象                       | `e.target.dataset.recordId`                                  | 微信会转成小写字母`e.target.dataset.recordid`                |
+| 子组件需要调用父组件的某个方法 | 父组件可以将函数作为属性传递给子组件，子组件通过props接收    | 目前只能通过父组件事件监听，子组件通过`triggerEvent`触发父组件自身的方法 |
+| 图片/文件上传                  | `dd.chooseImage`成功回调中，图片的本地临时文件路径列表属性名为`filePaths` | `wx.chooseImage`成功回调中，图片的本地临时文件路径列表属性名为`tempFilePaths` |
+| 上传文件uploadFile             | `dd.uploadFile` 参数对象中，`name`属性非必传                 | `wx.uploadFile` 参数对象中，`name`属性必传，作为文件对应的 key，开发者在服务端可以通过这个 key 获取文件的二进制内容 |
+| 登录                           | 调用`my.getAuthCode`获取授权码                               | `wx.login`调用接口获取登录凭证（code）。通过凭证进而换取用户登录态信息，包括用户的唯一标识（openid）及本次登录的会话密钥（session_key）等。 |
+| 滚动选择器组件 picker-view     | 初始加载时能通过value值设置默认选中位置                      | 初始加载时不能通过value值设置默认选中位置，感觉是微信的bug   |
+| 自定义组件                     | `Component`定义属性用`props`                                 | `Component`定义属性用`properties`                            |
