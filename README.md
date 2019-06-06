@@ -42,4 +42,14 @@
 
 `a:`  -> ` wx:`
 
+http请求头：`headers` ->  `header`
+
+通过e.target获取的值，微信小程序会转成小写字母
+
+例如： `e.target.dataset.recordId` -> `e.target.dataset.recordid`
+
+当子组件需要调用父组件的某个方法时，钉钉小程序父组件可以将函数作为属性传递给子组件，由子组件直接调用；微信小程序目前只能通过父组件事件监听，子组件通过`triggerEvent`触发父组件的方法
+
+`uploadFile` 钉钉和微信小程序参数定义有区别
+
 持续更新中...
