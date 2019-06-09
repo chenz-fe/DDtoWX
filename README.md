@@ -43,8 +43,8 @@
 | 点击事件绑定                   | `onTap`                                                      | `bindtap`                                                    |
 | 失去焦点                       | `onBlur`                                                     | `bindblur`                                                   |
 | 本地缓存                       | `dd.getStorageSync({key: 'score'}).data`                     | `wx.getStorageSync('score')`                                 |
-| toast提示                      | `dd.showToast({content: '请填写名称'})`                      | `wx.showToast({title: '请填写名称',icon:'none'})`，如果不设置`icon:none`，会默认显示成功的图标` |
-| 事件选择器                     | `dd.datePicker`                                              | 微信里没有此方法，可以通过picker-view组件实现                |
+| toast提示                      | `dd.showToast({content: '请填写名称'})`                      | `wx.showToast({title: '请填写名称',icon:'none'})`，如果不设置`icon:none`，会默认显示成功的图标 |
+| 时间选择器                     | `dd.datePicker`                                              | 微信里没有此方法，可以通过picker-view组件实现                |
 | 模板语法                       | `a:`                                                         | ` wx:`                                                       |
 | 网络请求header参数             | `dd.request`中为`headers`                                    | `wx.request`中为`header`                                     |
 | 事件对象                       | `e.target.dataset.recordId`                                  | 微信会转成小写字母`e.target.dataset.recordid`                |
